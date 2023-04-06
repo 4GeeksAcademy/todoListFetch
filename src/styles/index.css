@@ -10,3 +10,17 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+.card-header input{
+    background-color: transparent;
+
+}
+.card-footer {
+
+    font-size: 0.7em;
+}
+
+.card{
+    max-width: 30rem;
+    margin: auto;
+    margin-top: 1em
+}
