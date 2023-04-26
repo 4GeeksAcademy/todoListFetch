@@ -1,63 +1,152 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+
+// const username=process.env.USERNAME
 
 //include images into your bundle
 import rigoImage from "../../img/rigo-baby.jpg";
 
 //create your first component
 const Home = () => {
-	const [task, setTask] = useState("")
-	const [todos, setTodos] = useState(["Tarea 1", "tarea 2"])
+
+	const [todos, setTodos] = useState([])
+	const [todo, setTodo]= useState([])
+	const apiUrl= "https://assets.breatheco.de/apis/fake/todos/user/mariabottinii"
+
+	async function loadList() {
+		let response=await fetch(apiUrl)
+		if(response.ok){
+		let data = await response.json();
+		setTodos(data)
+		// console.log(data)
+	}
+		
+		return response.status
+	}
+	useEffect(()=>{
+		loadList().then (async status=> {
+			if(status==404){
+				let response=await fetch(apiUrl, {
+				method: "POST",	
+				body:"[]",
+				headers: {
+					"Content-Type": "application/json"
+				}
+				}
+				)
+				if (response.ok) return loadList()
+				
+			}})
+	},[])
+
+
 	
-	function addTask(e) {
-		if(e.code=="Enter") {
-			setTodos([...todos, task])
-			setTask("")
+
+	async function addTodo (e)
+		{
+		if(e.key=="Enter"){
+
+		
+			let response = await fetch(apiUrl, {
+				body: JSON.stringify([...todos,{label:e.target.value, done:false}]),
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+			
+			
+			if (!response.ok) {
+
+				console.log(response.status + ":" + response.statusText);
+				return;
+			} else {
+				setTodos([...todos,{label:e.target.value, done:false}])
+				loadList()
+				
+			}
 		}
+			// let data= await response.json()
+			// if(e.key=="Enter") {
+			// let newItem={label:e.target.value, done:false}
+			// let newTodos=[...todos,newItem]
+			// setTodos(newTodos)
+			// e.target.value=""
+		// }
+		
+		
+
 		
 	}
 
-	function delTask(index) {
-		// let newTodos= [...todos]
+
+	async function deleteTodo(index) {
+
+		let newTodos=todos.splice(index, todos.length);
+		console.log(newTodos)
+		// )
+			// newTodos.splice(index,1)
+			// setTodos(newTodos)
+			// let e={}
+			// e.key="Enter"
+			// addTodo(todo)
+
+		let response = await fetch(apiUrl, {
+			method:"PUT",
+			body: newTodos,
+			headers: {
+				"Content-Type": "application/json"
+			}
+			
+		})
+		if(response.ok){
+			// let newTodos= [...todos]
+			// newTodos.splice(index,1)
+			// setTodos(newTodos)
+			loadList()
+		} else {
+			console.error(response.status + "/" + response.statusText)
+		}	
+		
+		// let newTodos=[...todos]
 		// newTodos.splice(index,1)
 		// setTodos(newTodos)
-		setTodos([
-			...todos.slice(0,index),
-			...todos.slice(index+1)
-		])
+
+	
+	}
+
+	function checkTodo(index){
+		let newTodos=[...todos]
+		newTodos[index].done=!newTodos[index].done
+		setTodos(newTodos)
 	}
 
 	return (
-		<>
-	<div className="card">
- 	<div className="card-header">
-  	<input 
-	type="text" 
-	className="form-control border-0" 
-	placeholder="Escriba la nueva tarea"
-	value={task}
-	onChange={(e)=>setTask(e.target.value)}
-	onKeyDown={addTask}
-	/>
+		<div>
+	<div className="d-flex flex-column align-items-center">
+ 	
+  	<input type="text" name="" id="" value={todo} onKeyDown={(e)=>addTodo(e)} onChange={(e)=>setTodo(e.target.value)}/>
+	{/* // value={todos}
+	// onChange={(e)=>setTodos(e.target.value)}
+	// onKeyDown={addTodo}
+	/> */}
 	
-  </div>
-  </div>
-  <div>
-  <ul className="list-group list-group-flush">
-	{todos.map((todo, index)=> (
- 	<li  key={index}  className="list-group-item d-flex justify-content-between align item">{todo}
- 	<button onClick={()=>delTask(index)} className="btn btn-outline-danger btn-sm rounded-pill">X</button>
- 	</li>
-	))}
-  </ul>
-</div>
-<div className="card-footer">{todos.length}item left</div>
-   
-  
-		
-</>
-		
-
+  	<ol className="list-group d-flex w-100">
+	{todos.map((todo, index)=> <li key={index} className="list-group-item justify-content-center">
+	<div>
+	<input className="form-check-input ml-3" type="checkbox"  value="" onChange={(e)=> checkTodo(index)} checked={todo.done} />{todo.label}
+	</div>
+ 	<span onClick={()=>deleteTodo(index)} className="btn btn-outline-danger btn-sm rounded-pill">X</span>
+ 	</li>)}
+  	</ol>
+	</div>
+	</div>
 	);
-};
+
+}
+
+	
+
+
+
 
 export default Home;
