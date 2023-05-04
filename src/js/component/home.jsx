@@ -73,11 +73,7 @@ const Home = () => {
 		// e.target.value=""
 		// }
 
-
-
-
 	}
-
 
 	async function deleteTodo(index) {
 
@@ -114,7 +110,6 @@ const Home = () => {
 		// newTodos.splice(index,1)
 		// setTodos(newTodos)
 
-
 	}
 
 	function checkTodo(index) {
@@ -126,12 +121,13 @@ const Home = () => {
 	return (
 		<div>
 			<div className="d-flex container flex-column mx-auto border border-dark p-5">
+				<h2 className="text-center text-uppercase">To Do List Fetch</h2>
 				<input type="text p-3 mx-auto" name="" id="" value={todo} onKeyDown={(e) => addTodo(e)} onChange={(e) => setTodo(e.target.value)} />
-				<ol className="list-group d-flex w-100 p-3 d-flex justify-content-end">
-					{todos.map((todo, index) => <li key={index} className="list-group-item justify-content-center">
+				<ol className="list-group d-flex w-100 p-2 d-flex justify-content-center">
+					{todos.map((todo, index) => <li key={index} className="list-group-item border border-dark rounded-3 p-2 mb-2">
 						<div>
 							<input className="form-check-input" type="checkbox" value="" onChange={(e) => checkTodo(index)} checked={todo.done} />{todo.label}
-							<span onClick={() => deleteTodo(index)} className="btn btn-outline-danger btn-sm rounded-pill ">X</span>
+							<span onClick={() => deleteTodo(index)} className="btn btn-outline-danger btn-sm rounded-pill">X</span>
 						</div>
 					</li>)}
 				</ol>
@@ -140,10 +136,5 @@ const Home = () => {
 	);
 
 }
-
-
-
-
-
 
 export default Home;
